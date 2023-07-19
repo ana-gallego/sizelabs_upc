@@ -6,7 +6,7 @@ import 'package:sizelabs_upc/src/product.dart';
 import 'package:http/http.dart' as http;
 
 class Reader extends StatefulWidget {
-  final Function(Product?) onCodeRead;
+  final Function(UPCProduct?) onCodeRead;
   const Reader({super.key, required this.onCodeRead});
 
   @override
@@ -61,16 +61,17 @@ class _ReaderState extends State<Reader> {
     widget.onCodeRead(product);
   }
 
-  Future<Product?> _getCodeData(String code) async {
+  Future<UPCProduct?> _getCodeData(String code) async {
     try {
-      final response = await http.get(
-          Uri.parse('https://wilkins-upc-dev.sizelabs.co/upc?barcode=$code'));
+      final response = await http
+          .get(Uri.parse('https://test-api-upc.sizelabs.co/upc?barcode=$code'));
       if (response.statusCode == 200) {
-        return Product.fromJson(json.decode(response.body)['products'].first);
+        return UPCProduct.fromJson(
+            json.decode(response.body)['products'].first);
       }
       throw Exception('Failed to load product');
     } catch (e) {
-      return null;
+      rethrow;
     }
   }
 }

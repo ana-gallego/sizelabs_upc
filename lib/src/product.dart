@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class Product {
+class UPCProduct {
   String code;
   String title;
   String category;
@@ -8,7 +8,7 @@ class Product {
   List<String> images;
   List<Store> stores;
 
-  Product({
+  UPCProduct({
     required this.code,
     required this.title,
     required this.category,
@@ -17,11 +17,12 @@ class Product {
     required this.stores,
   });
 
-  factory Product.fromRawJson(String str) => Product.fromJson(json.decode(str));
+  factory UPCProduct.fromRawJson(String str) =>
+      UPCProduct.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory Product.fromJson(Map<String, dynamic> json) => Product(
+  factory UPCProduct.fromJson(Map<String, dynamic> json) => UPCProduct(
         code: json["barcode_number"],
         title: json["title"],
         category: json["category"],
