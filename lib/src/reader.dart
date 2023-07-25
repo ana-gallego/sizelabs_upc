@@ -7,7 +7,12 @@ import 'package:http/http.dart' as http;
 
 class Reader extends StatefulWidget {
   final Function(UPCProduct?) onCodeRead;
-  const Reader({super.key, required this.onCodeRead});
+  final Widget? loadingWidget;
+  const Reader({
+    super.key,
+    required this.onCodeRead,
+    this.loadingWidget,
+  });
 
   @override
   State<Reader> createState() => _ReaderState();
@@ -27,38 +32,23 @@ class _ReaderState extends State<Reader> {
         ],
         qrCodeCallback: (code) => qrCodeCallback(code),
         child: loading
-            ? Container(
-                color: Colors.black12,
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                        child: CircularProgressIndicator(
-                      color: Colors.white,
-                    )),
-                    SizedBox(height: 16),
-                    Center(
-                        child: Text(
-                      "Loading...",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                      ),
-                    )),
-                  ],
-                ))
+            ? widget.loadingWidget ?? const SizedBox()
             : const SizedBox(),
       ),
     );
   }
 
   Future<void> qrCodeCallback(code) async {
-    if (loading) return;
-    setState(() => loading = true);
-    var product = await _getCodeData(code);
-    setState(() => loading = false);
-    widget.onCodeRead(product);
+    try {
+      if (loading) return;
+      setState(() => loading = true);
+      var product = await _getCodeData(code);
+      if (!mounted) return;
+      setState(() => loading = false);
+      widget.onCodeRead(product);
+    } catch (_) {
+      rethrow;
+    }
   }
 
   Future<UPCProduct?> _getCodeData(String code) async {
@@ -69,8 +59,8 @@ class _ReaderState extends State<Reader> {
         return UPCProduct.fromJson(
             json.decode(response.body)['products'].first);
       }
-      throw Exception('Failed to load product');
-    } catch (e) {
+      return null;
+    } catch (_) {
       rethrow;
     }
   }

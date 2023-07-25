@@ -37,11 +37,11 @@ class MyHomePage extends StatelessWidget {
   }
 
   _onClick(BuildContext context) {
-    showDialog(
+    showDialog<UPCProduct?>(
       context: context,
       builder: (BuildContext context) => const ReaderDialog(),
-    ).then((value) {
-      log(value);
+    ).then((product) {
+      log(product?.toRawJson() ?? 'No product returned');
     });
   }
 }
@@ -63,11 +63,15 @@ class _ReaderDialogState extends State<ReaderDialog> {
       width: 300,
       child: Reader(
         onCodeRead: (x) async {
-          await Future.delayed(const Duration(seconds: 1));
-          if (isReading) return;
-          if (mounted) {
-            Navigator.of(context).pop(x);
-            setState(() => isReading = true);
+          try {
+            await Future.delayed(const Duration(seconds: 1));
+            if (isReading) return;
+            if (mounted) {
+              Navigator.of(context).pop(x);
+              setState(() => isReading = true);
+            }
+          } catch (e) {
+            print("Error: $e");
           }
         },
       ),
