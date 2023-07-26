@@ -61,7 +61,7 @@ class _ReaderDialogState extends State<ReaderDialog> {
         child: SizedBox(
       height: 500,
       width: 300,
-      child: Reader(
+      child: UPCReader(
         onCodeRead: (x) async {
           try {
             await Future.delayed(const Duration(seconds: 1));

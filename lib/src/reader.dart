@@ -5,20 +5,22 @@ import 'package:qr_mobile_vision/qr_camera.dart';
 import 'package:sizelabs_upc/src/product.dart';
 import 'package:http/http.dart' as http;
 
-class Reader extends StatefulWidget {
+class UPCReader extends StatefulWidget {
   final Function(UPCProduct?) onCodeRead;
   final Widget? loadingWidget;
-  const Reader({
+  final Widget? errorWidget;
+  const UPCReader({
     super.key,
     required this.onCodeRead,
     this.loadingWidget,
+    this.errorWidget,
   });
 
   @override
-  State<Reader> createState() => _ReaderState();
+  State<UPCReader> createState() => _UPCReaderState();
 }
 
-class _ReaderState extends State<Reader> {
+class _UPCReaderState extends State<UPCReader> {
   bool loading = false;
   @override
   Widget build(BuildContext context) {
@@ -27,13 +29,14 @@ class _ReaderState extends State<Reader> {
         formats: const [
           BarcodeFormats.UPC_A,
           BarcodeFormats.UPC_E,
-          BarcodeFormats.EAN_8,
-          BarcodeFormats.EAN_13,
         ],
         qrCodeCallback: (code) => qrCodeCallback(code),
         child: loading
             ? widget.loadingWidget ?? const SizedBox()
             : const SizedBox(),
+        notStartedBuilder: (context) =>
+            widget.loadingWidget ?? const SizedBox(),
+        onError: (context, error) => widget.errorWidget ?? const SizedBox(),
       ),
     );
   }
