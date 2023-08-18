@@ -37,11 +37,11 @@ class MyHomePage extends StatelessWidget {
   }
 
   _onClick(BuildContext context) {
-    showDialog<UPCProduct?>(
+    showDialog(
       context: context,
       builder: (BuildContext context) => const ReaderDialog(),
     ).then((product) {
-      log(product?.toRawJson() ?? 'No product returned');
+      log(product?.toString() ?? 'No product returned');
     });
   }
 }
@@ -62,6 +62,7 @@ class _ReaderDialogState extends State<ReaderDialog> {
       height: 500,
       width: 300,
       child: UPCReader(
+        url: '',
         onCodeRead: (x) async {
           try {
             await Future.delayed(const Duration(seconds: 1));

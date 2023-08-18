@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:qr_mobile_vision/qr_camera.dart';
-import 'package:sizelabs_upc/src/product.dart';
 import 'package:http/http.dart' as http;
 
 class UPCReader extends StatefulWidget {
-  final Function(UPCProduct?) onCodeRead;
+  final String url;
+  final Function(Map<String, dynamic>?) onCodeRead;
   final Widget? loadingWidget;
   final Widget? errorWidget;
   const UPCReader({
@@ -14,6 +14,7 @@ class UPCReader extends StatefulWidget {
     required this.onCodeRead,
     this.loadingWidget,
     this.errorWidget,
+    required this.url,
   });
 
   @override
@@ -45,7 +46,7 @@ class _UPCReaderState extends State<UPCReader> {
     try {
       if (loading) return;
       setState(() => loading = true);
-      var product = await _getCodeData(code);
+      var product = await _getCodeData('746775036720');
       if (!mounted) return;
       setState(() => loading = false);
       widget.onCodeRead(product);
@@ -54,16 +55,16 @@ class _UPCReaderState extends State<UPCReader> {
     }
   }
 
-  Future<UPCProduct?> _getCodeData(String code) async {
+  Future<Map<String, dynamic>?> _getCodeData(String code) async {
     try {
-      final response = await http
-          .get(Uri.parse('https://test-api-upc.sizelabs.co/upc?barcode=$code'));
+      final response =
+          await http.get(Uri.parse('${widget.url}/upc?barcode=$code'));
       if (response.statusCode == 200) {
-        return UPCProduct.fromJson(
-            json.decode(response.body)['products'].first);
+        return json.decode(response.body)['products'].first;
       }
       return null;
     } catch (_) {
+      print("chatch: $_");
       rethrow;
     }
   }
