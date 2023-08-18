@@ -46,7 +46,7 @@ class _UPCReaderState extends State<UPCReader> {
     try {
       if (loading) return;
       setState(() => loading = true);
-      var product = await _getCodeData('746775036720');
+      var product = await _getCodeData(code);
       if (!mounted) return;
       setState(() => loading = false);
       widget.onCodeRead(product);
