@@ -1,4 +1,4 @@
-package com.sizelabs.sizelabs_upc
+package com.sizelabs.sizelabs_upc_reader
 
 import androidx.annotation.NonNull
 

@@ -1,6 +1,6 @@
-name: sizelabs_upc
+name: sizelabs_upc_reader
 description: UPC Reader by Sizelabs
-version: 0.0.4
+version: 0.0.5
 
 environment:
   sdk: ">=2.19.4 <3.0.0"
@@ -22,7 +22,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.sizelabs.sizelabs_upc
+        package: com.sizelabs.sizelabs_upc_reader
         pluginClass: SizelabsUpcPlugin
       ios:
         pluginClass: SizelabsUpcPlugin

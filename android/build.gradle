@@ -1,4 +1,4 @@
-group 'com.sizelabs.sizelabs_upc'
+group 'com.sizelabs.sizelabs_upc_reader'
 version '1.0-SNAPSHOT'
 
 buildscript {

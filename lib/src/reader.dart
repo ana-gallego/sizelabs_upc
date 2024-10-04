@@ -7,13 +7,19 @@ import 'package:http/http.dart' as http;
 class UPCReader extends StatefulWidget {
   final String url;
   final Function(Map<String, dynamic>?) onCodeRead;
+  final Function(Object?) onCodeReadError;
+  final Function(String readedCode) onCodeNotFound;
   final Widget? loadingWidget;
   final Widget? errorWidget;
+  final bool retriveData;
   const UPCReader({
     super.key,
     required this.onCodeRead,
+    required this.onCodeReadError,
+    required this.onCodeNotFound,
     this.loadingWidget,
     this.errorWidget,
+    this.retriveData = true,
     required this.url,
   });
 
@@ -44,27 +50,38 @@ class _UPCReaderState extends State<UPCReader> {
 
   Future<void> qrCodeCallback(code) async {
     try {
-      if (loading) return;
-      setState(() => loading = true);
-      var product = await _getCodeData(code);
-      if (!mounted) return;
-      setState(() => loading = false);
-      widget.onCodeRead(product);
+      if (!loading && widget.retriveData) {
+        setState(() => loading = true);
+        var product = await _getCodeData(code);
+        if (!mounted) return;
+        await Future.delayed(const Duration(seconds: 1));
+        setState(() => loading = false);
+        if (product.isNotEmpty) {
+          widget.onCodeRead(product);
+        }
+      }
     } catch (_) {
-      rethrow;
+      widget.onCodeReadError(_);
     }
   }
 
-  Future<Map<String, dynamic>?> _getCodeData(String code) async {
+  Future<Map<String, dynamic>> _getCodeData(String code) async {
     try {
       final response =
           await http.get(Uri.parse('${widget.url}/upc?barcode=$code'));
       if (response.statusCode == 200) {
-        return json.decode(response.body)['products'].first;
+        final results =
+            json.decode(response.body)['products'] as List<dynamic>? ?? [];
+        debugPrint('results: $results');
+        if (results.isNotEmpty) {
+          return results.first as Map<String, dynamic>;
+        } else {
+          widget.onCodeNotFound(code);
+          return {};
+        }
       }
-      return null;
+      throw Exception('Failed to load data');
     } catch (_) {
-      print("chatch: $_");
       rethrow;
     }
   }
